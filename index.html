@@ -1,0 +1,1141 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Prompts de Programación v1.0.0</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@300;400;500;600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" xintegrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        :root {
+            --bg-deep-dark: #0F0F13; 
+            --bg-dark-gray: #1A191D; 
+            --bg-mid-gray: #252428;  
+            
+            --surface-card-bg-start: #201F23;
+            --surface-card-bg-end: #1A191D;
+            --surface-card-bg: linear-gradient(145deg, var(--surface-card-bg-start), var(--surface-card-bg-end));
+            
+            --neo-shadow-color-dark: #0B0A0D;
+            --neo-shadow-color-light: #29282D;
+
+            --text-primary: #E0E0E5; 
+            --text-secondary: #9E9EA3; 
+            --text-on-accent: #FFFFFF;
+            --text-on-warning: #FFFFFF; 
+            --text-disabled: #45454A;
+            
+            --accent-btn-blue-start: #3a69c8; 
+            --accent-btn-purple-end: #5c2df4; 
+            --accent-gradient-button: linear-gradient(90deg, var(--accent-btn-blue-start) 0%, var(--accent-btn-purple-end) 100%);
+            --accent-gradient-button-hover: linear-gradient(90deg, #4e7dd8 0%, #724ff5 100%); 
+            
+            --accent-purple-general: #A062D9; 
+            --accent-blue-general: #4A90E2;   
+            --accent-magenta-general: #D94A8C; 
+            --accent-gradient-general: linear-gradient(135deg, var(--accent-magenta-general) 0%, var(--accent-purple-general) 50%, var(--accent-blue-general) 100%);
+
+            --warning-btn-bg-start: #8f5825; 
+            --warning-btn-bg-end: #a36126; 
+            --warning-gradient-button: linear-gradient(135deg, var(--warning-btn-bg-start), var(--warning-btn-bg-end));
+            --warning-gradient-button-hover: linear-gradient(135deg, #a36126, #b76a27);
+
+            --border-glow-subtle: rgba(200, 200, 220, 0.1); 
+            --border-glow-interactive: rgba(92, 45, 244, 0.6); 
+            --border-radius-main: 16px; 
+            --border-radius-small: 10px;
+            --border-radius-pill: 999px;
+
+            --success-color: #30C870; 
+            --error-color: #E84C3D;   
+
+            --font-main: 'Open Sans', sans-serif;
+            --font-headings: 'Noto Sans', sans-serif;
+
+            --tooltip-bg: var(--bg-mid-gray);
+            --tooltip-text: var(--text-primary);
+
+            --neo-shadow-outset: 
+                6px 6px 12px var(--neo-shadow-color-dark),
+                -6px -6px 12px var(--neo-shadow-color-light);
+            --neo-shadow-inset: 
+                inset 5px 5px 10px var(--neo-shadow-color-dark),
+                inset -5px -5px 10px var(--neo-shadow-color-light);
+            --neo-shadow-button: 
+                3px 3px 6px var(--neo-shadow-color-dark),
+                -3px -3px 6px var(--neo-shadow-color-light);
+             --neo-shadow-button-active: 
+                inset 2px 2px 4px var(--neo-shadow-color-dark),
+                inset -2px -2px 4px var(--neo-shadow-color-light);
+        }
+
+        html { scroll-behavior: smooth; font-size: 16px; }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-deep-dark);
+            color: var(--text-primary);
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+            padding-top: 80px; 
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .container {
+            max-width: 950px;
+            margin: 30px auto; 
+            padding: 30px; 
+            background: var(--bg-dark-gray); 
+            border-radius: var(--border-radius-main);
+            box-shadow: var(--neo-shadow-outset);
+            border: 1px solid var(--neo-shadow-color-light); 
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+        *:focus { 
+            outline-style: solid;
+            outline-color: transparent;
+            box-shadow: 0 0 0 2px var(--bg-deep-dark), 0 0 0 4px var(--border-glow-interactive);
+        }
+
+        h1, h2, h3 {
+            font-family: var(--font-headings); 
+            color: var(--text-primary);
+            margin-top: 0;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 2.3rem; 
+            font-weight: 600; 
+        }
+        h2 { 
+            font-size: 1.6rem; 
+            font-weight: 500; 
+            border-bottom: 2px solid;
+            border-image-source: var(--accent-gradient-general); 
+            border-image-slice: 1;
+            border-width: 0 0 2px 0;
+            padding-bottom: 12px;
+            margin-top: 40px;
+            margin-bottom: 25px;
+        }
+         h3 { 
+            font-size: 1.1rem; 
+            color: var(--text-secondary);
+            margin-bottom: 15px;
+            font-weight: 500; 
+            text-transform: uppercase; 
+            letter-spacing: 0.5px;
+        }
+
+        fieldset {
+            border: 1px solid var(--neo-shadow-color-light);
+            border-radius: var(--border-radius-main);
+            padding: 25px;
+            margin-bottom: 30px;
+            background: var(--surface-card-bg);
+            box-shadow: var(--neo-shadow-outset);
+            position: relative; 
+        }
+
+        legend {
+            font-family: var(--font-headings);
+            font-weight: 600; 
+            color: var(--accent-purple-general); 
+            font-size: 1.2rem; 
+            padding: 0 5px; 
+            margin-left: 0; 
+            margin-bottom: 20px; 
+            display: block; 
+            background: none; 
+            box-shadow: none; 
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 400; 
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+        .checkbox-group-item label, .checkbox-item-label {
+            font-weight: 400; 
+            color: var(--text-primary); 
+        }
+
+        input[type="text"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 14px 18px;
+            margin-bottom: 20px;
+            border: 1px solid transparent; 
+            border-radius: var(--border-radius-small);
+            background-color: var(--bg-dark-gray); 
+            color: var(--text-primary);
+            font-size: 1rem;
+            font-family: var(--font-main); 
+            box-shadow: var(--neo-shadow-inset);
+            transition: box-shadow 0.2s ease-out, border-color 0.2s ease-out;
+        }
+        input[type="text"]::placeholder,
+        textarea::placeholder {
+            color: var(--text-disabled);
+            opacity: 0.8;
+        }
+        input[type="text"]:focus,
+        textarea:focus,
+        select:focus {
+            border-color: var(--border-glow-interactive); 
+            box-shadow: var(--neo-shadow-inset), 0 0 0 2px var(--border-glow-interactive); 
+        }
+        textarea { min-height: 100px; } /* Adjusted min-height for code snippets */
+        select {
+            appearance: none; 
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%239E9EA3'%3E%3Cpath d='M7 10l5 5 5-5H7z'/%3E%3C/svg%3E"); 
+            background-repeat: no-repeat;
+            background-position: right 18px center;
+            background-size: 1.2em;
+            padding-right: 40px; 
+        }
+
+        .checkbox-group > div {
+            display: flex;
+            align-items: center; 
+            margin-bottom: 12px;
+        }
+        .checkbox-group input[type="checkbox"], .radio-group input[type="radio"] {
+            margin-right: 10px;
+            accent-color: var(--accent-btn-purple-end); 
+            transform: scale(1.1); 
+            flex-shrink: 0; 
+        }
+
+        button, input[type="file"]::-webkit-file-upload-button {
+            font-family: var(--font-headings); 
+            font-weight: 500; 
+            background: var(--accent-gradient-button); 
+            color: var(--text-on-accent);
+            padding: 12px 25px;
+            border: none;
+            border-radius: var(--border-radius-pill); 
+            cursor: pointer;
+            font-size: 0.95rem; 
+            text-decoration: none;
+            display: inline-block;
+            box-shadow: var(--neo-shadow-button);
+            transition: all 0.2s ease-out;
+            margin-right: 10px; margin-top: 10px;
+            letter-spacing: 0.5px; 
+        }
+        button:hover, input[type="file"]::-webkit-file-upload-button:hover {
+            background: var(--accent-gradient-button-hover); 
+            box-shadow: 2px 2px 5px var(--neo-shadow-color-dark),
+                        -2px -2px 5px var(--neo-shadow-color-light),
+                        0px 0px 10px rgba(92, 45, 244, 0.3); 
+            transform: translateY(-2px);
+        }
+        button:active, input[type="file"]::-webkit-file-upload-button:active {
+            box-shadow: var(--neo-shadow-button-active); 
+            transform: translateY(0px);
+        }
+        button:disabled {
+            background: var(--bg-mid-gray);
+            color: var(--text-disabled);
+            cursor: not-allowed;
+            box-shadow: var(--neo-shadow-inset);
+            transform: translateY(0px);
+        }
+        button.secondary {
+            background: transparent; 
+            color: var(--text-secondary);
+            box-shadow: none; 
+            border: 1px solid var(--neo-shadow-color-light);
+        }
+        button.secondary:hover {
+            background: var(--bg-mid-gray);
+            color: var(--text-primary);
+            border-color: var(--border-glow-interactive);
+            box-shadow: var(--neo-shadow-button); 
+        }
+        button.warning { 
+            background: var(--warning-gradient-button); 
+            color: var(--text-on-warning); 
+            box-shadow: var(--neo-shadow-button);
+        }
+        button.warning:hover {
+            background: var(--warning-gradient-button-hover); 
+            box-shadow: 2px 2px 5px var(--neo-shadow-color-dark),
+                        -2px -2px 5px var(--neo-shadow-color-light),
+                        0px 0px 10px rgba(163, 97, 38, 0.5); 
+        }
+        
+        .sticky-bar button {
+            padding: 10px 18px; 
+            font-size: 0.9rem;
+        }
+
+        .emoji { margin-right: 8px; }
+        .date-display { text-align: right; font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 20px; }
+        #loadedConfigNameDisplay {
+            text-align: center; margin-bottom: 20px; padding: 12px; 
+            background-color: rgba(255,255,255,0.03);
+            border-radius: var(--border-radius-small); 
+            color: var(--accent-blue-general); 
+            font-weight: 600; display: none; 
+            border: 1px solid var(--border-glow-subtle);
+            font-size: 0.9rem;
+        }
+        #scrollToTopBtn {
+            display: none; position: fixed; bottom: 30px; right: 30px; z-index: 999;
+            border: none; outline: none; 
+            background: var(--accent-gradient-button); 
+            color: var(--text-on-accent);
+            cursor: pointer; width: 50px; height: 50px; 
+            border-radius: 50%; font-size: 1.3rem; 
+            box-shadow: var(--neo-shadow-outset);
+            display: flex; align-items: center; justify-content: center; 
+            transition: all 0.2s ease-out;
+        }
+        #scrollToTopBtn:hover {
+            background: var(--accent-gradient-button-hover);
+            box-shadow: 6px 6px 12px var(--neo-shadow-color-dark), -6px -6px 12px var(--neo-shadow-color-light), 0 0 15px var(--accent-btn-purple-end); 
+            transform: translateY(-3px) scale(1.05);
+        }
+        
+        #outputPromptContainer { margin-top: 30px; }
+        #outputPromptContainer textarea {
+            min-height: 250px; /* Increased height for JSON prompt */
+            background-color: var(--bg-deep-dark); 
+            border: 1px solid var(--neo-shadow-color-light);
+            box-shadow: var(--neo-shadow-inset);
+            color: var(--text-primary);
+            padding: 15px;
+            font-family: 'Courier New', Courier, monospace; 
+        }
+        
+        .checkbox-group { margin-bottom: 20px; }
+        .checkbox-group-item label, .checkbox-item-label {
+            font-size: 0.95rem;
+            margin-left: 0; 
+        }
+        
+        .sticky-bar {
+            position: fixed; top: 0; left: 0; width: 100%; 
+            background-color: rgba(15, 15, 19, 0.85); 
+            backdrop-filter: blur(10px); 
+            -webkit-backdrop-filter: blur(10px);
+            padding: 10px 25px; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.4); 
+            z-index: 1000; display: flex; align-items: center; gap: 12px; box-sizing: border-box;
+        }
+        .sticky-bar .config-save-options { display: flex; align-items: center; margin-left: auto; }
+        .sticky-bar .config-save-options label { margin-bottom: 0; margin-right: 8px; font-size: 0.9rem; color: var(--text-secondary); }
+        .sticky-bar .config-save-options input[type="checkbox"] { accent-color: var(--accent-btn-purple-end); transform: scale(1.1); }
+
+        .personal-info-section {
+            text-align: center; padding: 30px 0; 
+            border-top: 1px solid var(--neo-shadow-color-light); 
+            margin-top: 40px;
+        }
+        .personal-info-section legend {
+            font-family: var(--font-headings);
+            font-weight: 600;
+            color: var(--accent-blue-general);
+            font-size: 1.2rem;
+            padding: 0;
+            margin-bottom: 25px; 
+            display: block;
+            background: none;
+            box-shadow: none;
+        }
+        .personal-info-section p { margin-bottom: 20px; font-size: 1rem; color: var(--text-secondary); }
+        .personal-info-section a { color: var(--accent-blue-general); text-decoration: none; font-weight: 600; }
+        .personal-info-section a:hover { text-decoration: none; color: var(--accent-purple-general); }
+        .social-icons { margin-bottom: 25px; }
+        .social-icons a {
+            margin: 0 12px; font-size: 2rem; color: var(--text-secondary); 
+            transition: color 0.3s ease, transform 0.2s ease-out;
+        }
+        .social-icons a:hover { transform: scale(1.1); }
+        /* Specific social icon hover colors (example) */
+        :root { /* Define these if you want specific colors */
+            --youtube-color: #FF0000;
+            --linkedin-color: #0A66C2;
+            --instagram-color: #E4405F; /* You can use a gradient too */
+            --facebook-color: #1877F2;
+        }
+        .social-icons a:hover.fa-youtube { color: var(--youtube-color); }
+        .social-icons a:hover.fa-linkedin { color: var(--linkedin-color); }
+        .social-icons a:hover.fa-instagram { color: var(--instagram-color); }
+        .social-icons a:hover.fa-facebook { color: var(--facebook-color); }
+        .social-icons a:hover.fa-tiktok { color: var(--text-primary); } 
+        .donation-text { font-size: 0.95rem; max-width: 550px; margin: 0 auto 20px auto; line-height: 1.7; }
+        #donate-button-container { margin-top: 20px; margin-bottom: 20px; display: flex; justify-content: center; }
+
+        .tooltip { 
+            position: relative; display: inline-block; cursor: help;
+            margin-left: 4px; vertical-align: middle;
+        }
+        .tooltip .tooltiptext { 
+            visibility: hidden; width: 280px; background-color: var(--tooltip-bg);
+            color: var(--tooltip-text); text-align: left; 
+            border-radius: var(--border-radius-small); padding: 12px; 
+            position: absolute; z-index: 1001; bottom: 130%; 
+            left: 50%; margin-left: -140px; opacity: 0;
+            transition: opacity 0.3s ease; font-size: 0.9rem;
+            border: 1px solid var(--neo-shadow-color-light);
+            box-shadow: var(--neo-shadow-outset); 
+        }
+        .tooltip .tooltiptext::after { 
+            content: ""; position: absolute; top: 100%; left: 50%;
+            margin-left: -6px; border-width: 6px; border-style: solid;
+            border-color: var(--tooltip-bg) transparent transparent transparent;
+        }
+        .tooltip:hover .tooltiptext { visibility: visible; opacity: 1; }
+
+    </style>
+</head>
+<body>
+    <div class="sticky-bar">
+        <button id="btnOpenConfig"><span class="emoji">📂</span> Abrir Config</button>
+        <input type="file" id="fileOpenConfig" accept=".json" style="display: none;">
+        <button id="btnUndo" title="Deshacer (Ctrl+Z)" disabled><span class="emoji">↩️</span> Deshacer</button>
+        <button id="btnRedo" title="Rehacer (Ctrl+Shift+Z)" disabled><span class="emoji">↪️</span> Rehacer</button>
+        <button type="button" id="btnClearForm" class="warning"><span class="emoji">🧹</span> Limpiar</button>
+        <div class="config-save-options">
+            <label for="chkIncludePromptInSave"><span class="emoji">💾</span> Incluir prompt:</label>
+            <input type="checkbox" id="chkIncludePromptInSave">
+            <button id="btnSaveConfig"><span class="emoji">📥</span> Guardar</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <h1><span class="emoji">💻</span> Generador de Prompts de Programación <span class="emoji">🛠️</span></h1>
+        <div class="date-display" id="currentDate"></div>
+
+        <form id="promptForm">
+            <fieldset>
+                <legend><span class="emoji">👤</span> Rol de la IA y Lenguaje</legend>
+                <label for="rol">Actúa como si fueras:
+                    <span class="tooltip"><span class="emoji">ℹ️</span>
+                        <span class="tooltiptext">Define el perfil general de la IA. Ej: "un desarrollador senior", "un tutor de programación", "un arquitecto de software". Se combinará con el lenguaje seleccionado.</span>
+                    </span>
+                </label>
+                <input type="text" id="rol" name="rol" value="un asistente experto en programación">
+
+                <label for="lenguajeProgramacion">Lenguaje de Programación Principal:
+                    <span class="tooltip"><span class="emoji">ℹ️</span>
+                        <span class="tooltiptext">Selecciona el lenguaje de programación para el cual necesitas el prompt.</span>
+                    </span>
+                </label>
+                <select id="lenguajeProgramacion" name="lenguajeProgramacion">
+                    <option value="Python">Python</option>
+                    <option value="JavaScript">JavaScript</option>
+                    <option value="Java">Java</option>
+                    <option value="C++">C++</option>
+                    <option value="C#">C#</option>
+                    <option value="TypeScript">TypeScript</option>
+                    <option value="PHP">PHP</option>
+                    <option value="Swift">Swift</option>
+                    <option value="Kotlin">Kotlin</option>
+                    <option value="Go">Go</option>
+                    <option value="Ruby">Ruby</option>
+                    <option value="Rust">Rust</option>
+                    <option value="SQL">SQL</option>
+                    <option value="Shell Script (Bash)">Shell Script (Bash)</option>
+                    <option value="HTML">HTML</option>
+                    <option value="CSS">CSS</option>
+                    <option value="Otro">Otro (especificar en descripción)</option>
+                </select>
+            </fieldset>
+
+            <fieldset>
+                <legend><span class="emoji">🎯</span> Tarea Principal</legend>
+                <label for="tareaTitulo">Título de la tarea (Verbo + Qué + Para qué):
+                     <span class="tooltip"><span class="emoji">ℹ️</span>
+                        <span class="tooltiptext">Resume la acción, el objeto y el propósito de la tarea de programación. Ej: "Generar una función para validar emails", "Depurar un error en el script de carga", "Explicar el concepto de closures en JavaScript".</span>
+                    </span>
+                </label>
+                <input type="text" id="tareaTitulo" name="tareaTitulo" placeholder="Ej: Crear función para ordenar lista de objetos">
+            </fieldset>
+            
+            <fieldset>
+                <legend><span class="emoji">📝</span> Descripción del Problema / Requisito</legend>
+                <label for="descripcionProblema">Descripción Detallada del Problema o Requisito:
+                     <span class="tooltip"><span class="emoji">ℹ️</span>
+                        <span class="tooltiptext">Explica en detalle qué necesitas que haga el código, el problema a resolver, las entradas, las salidas esperadas, y cualquier lógica específica.</span>
+                    </span>
+                </label>
+                <textarea id="descripcionProblema" name="descripcionProblema" placeholder="Ej: Necesito una función en Python que reciba una lista de números enteros y devuelva una nueva lista solo con los números pares, ordenados de menor a mayor. Considerar que la lista de entrada puede estar vacía o contener no números (manejar errores)."></textarea>
+                
+                <label for="codigoExistente">Fragmento de Código Existente (Opcional):
+                     <span class="tooltip"><span class="emoji">ℹ️</span>
+                        <span class="tooltiptext">Si tienes código base, un intento previo, o un contexto de código donde se integrará la solución, pégalo aquí.</span>
+                    </span>
+                </label>
+                <textarea id="codigoExistente" name="codigoExistente" placeholder="Pega aquí cualquier código relevante..."></textarea>
+            </fieldset>
+
+            <fieldset>
+                <legend><span class="emoji">⚙️</span> Contexto Técnico Adicional</legend>
+                <label for="versionFrameworks">Versión del Lenguaje / Frameworks / Bibliotecas:
+                     <span class="tooltip"><span class="emoji">ℹ️</span>
+                        <span class="tooltiptext">Especifica versiones si son relevantes. Ej: "Python 3.9", "Node.js 18.x", "React 18.2", "Django 4.1", "pandas 1.5".</span>
+                    </span>
+                </label>
+                <input type="text" id="versionFrameworks" name="versionFrameworks" placeholder="Ej: Python 3.10, FastAPI 0.95">
+
+                <label for="entornoEjecucion">Entorno de Ejecución (si es relevante):
+                     <span class="tooltip"><span class="emoji">ℹ️</span>
+                        <span class="tooltiptext">Dónde se ejecutará el código. Ej: "Navegador Chrome v110", "Servidor Linux Ubuntu 22.04", "AWS Lambda", "Jupyter Notebook".</span>
+                    </span>
+                </label>
+                <input type="text" id="entornoEjecucion" name="entornoEjecucion" placeholder="Ej: Node.js v20 en Docker">
+
+                <label for="dependencias">Dependencias Específicas (si las hay):
+                     <span class="tooltip"><span class="emoji">ℹ️</span>
+                        <span class="tooltiptext">Lista otras bibliotecas o módulos que se deben usar o considerar. Ej: "requests", "jsonwebtoken", "numpy".</span>
+                    </span>
+                </label>
+                <input type="text" id="dependencias" name="dependencias" placeholder="Ej: sqlalchemy, pydantic">
+            </fieldset>
+
+            <fieldset>
+                <legend><span class="emoji">🎨</span> Estilo y Formato del Código</legend>
+                <label for="estiloComentarios">Estilo de Comentarios:
+                    <span class="tooltip"><span class="emoji">ℹ️</span>
+                        <span class="tooltiptext">Define qué tan extensos o qué tipo de comentarios deseas.</span>
+                    </span>
+                </label>
+                <select id="estiloComentarios" name="estiloComentarios">
+                    <option value="Equilibrado (Recomendado)">Equilibrado (Recomendado)</option>
+                    <option value="Extensivo (Ideal para aprendizaje o código complejo)">Extensivo (Ideal para aprendizaje o código complejo)</option>
+                    <option value="Mínimo (Solo lo esencial)">Mínimo (Solo lo esencial)</option>
+                    <option value="Estilo Docstrings/JSDoc (Para documentación formal)">Estilo Docstrings/JSDoc (Para documentación formal)</option>
+                </select>
+
+                <label for="convencionesNomenclatura">Convenciones de Nomenclatura Preferidas:
+                    <span class="tooltip"><span class="emoji">ℹ️</span>
+                        <span class="tooltiptext">Si tienes preferencias (ej. camelCase, snake_case), indícalas. Si no, se usará el estándar del lenguaje.</span>
+                    </span>
+                </label>
+                <input type="text" id="convencionesNomenclatura" name="convencionesNomenclatura" placeholder="Ej: camelCase para variables, PascalCase para clases">
+
+                <label for="nivelOptimizacion">Nivel de Optimización:
+                    <span class="tooltip"><span class="emoji">ℹ️</span>
+                        <span class="tooltiptext">Prioridad entre claridad del código y rendimiento.</span>
+                    </span>
+                </label>
+                <select id="nivelOptimizacion" name="nivelOptimizacion">
+                    <option value="Legibilidad primero (Código claro y fácil de entender)">Legibilidad primero (Código claro y fácil de entender)</option>
+                    <option value="Rendimiento (Optimizar para velocidad/recursos donde sea crítico)">Rendimiento (Optimizar para velocidad/recursos)</option>
+                    <option value="Equilibrado">Equilibrado</option>
+                </select>
+
+                <label for="manejoErrores">Manejo de Errores:
+                    <span class="tooltip"><span class="emoji">ℹ️</span>
+                        <span class="tooltiptext">Cómo se deben manejar los errores o situaciones inesperadas.</span>
+                    </span>
+                </label>
+                <select id="manejoErrores" name="manejoErrores">
+                    <option value="Robusto (Try-catch extensivo, validaciones)">Robusto (Try-catch extensivo, validaciones)</option>
+                    <option value="Básico (Manejo de errores comunes)">Básico (Manejo de errores comunes)</option>
+                    <option value="Mínimo (Asumir entradas válidas, para prototipos)">Mínimo (Asumir entradas válidas, para prototipos)</option>
+                </select>
+            </fieldset>
+            
+            <fieldset>
+                <legend><span class="emoji">🚫</span> Prompt Negativo (Opcional)</legend>
+                <label for="negativePrompt">Cosas a evitar o excluir:
+                     <span class="tooltip"><span class="emoji">ℹ️</span>
+                        <span class="tooltiptext">Especifica aquí bibliotecas que NO usar, patrones de diseño a evitar, o cualquier otra restricción. Ej: "No usar bucles for, preferir map/filter", "Evitar el uso de variables globales", "No generar clases, solo funciones".</span>
+                    </span>
+                </label>
+                <textarea id="negativePrompt" name="negativePrompt" placeholder="Ej: No usar la biblioteca X, evitar recursividad..."></textarea>
+            </fieldset>
+
+            <fieldset>
+                <legend><span class="emoji">👥</span> Audiencia del Código/Explicación</legend>
+                <label for="audiencia">El código/explicación es para:
+                     <span class="tooltip"><span class="emoji">ℹ️</span>
+                        <span class="tooltiptext">¿Quién usará o leerá este código/explicación? Esto afecta el nivel de detalle y complejidad. Ej: "Un desarrollador junior", "Un colega con experiencia", "Para un tutorial público".</span>
+                    </span>
+                </label>
+                <input type="text" id="audiencia" name="audiencia" placeholder="Ej: Desarrollador con 2 años de experiencia en el lenguaje">
+            </fieldset>
+
+            <fieldset>
+                <legend><span class="emoji">📤</span> Formato de Salida Esperado y Extras</legend>
+                <label for="formatoSalidaTipo">Tipo de Salida Principal:
+                    <span class="tooltip"><span class="emoji">ℹ️</span>
+                        <span class="tooltiptext">¿Qué es lo principal que esperas recibir?</span>
+                    </span>
+                </label>
+                <select id="formatoSalidaTipo" name="formatoSalidaTipo">
+                    <option value="Solo código">Solo código</option>
+                    <option value="Código con explicación breve de cada parte">Código con explicación breve</option>
+                    <option value="Código con explicación detallada y conceptual">Código con explicación detallada</option>
+                    <option value="Explicación conceptual (con pseudocódigo o ejemplos mínimos)">Explicación conceptual</option>
+                    <option value="Script completo y ejecutable">Script completo y ejecutable</option>
+                    <option value="Función/Clase específica">Función/Clase específica</option>
+                </select>
+
+                <label for="formatoSalida">Descripción Adicional del Formato de Salida:
+                      <span class="tooltip"><span class="emoji">ℹ️</span>
+                        <span class="tooltiptext">Detalles sobre cómo quieres el resultado. Ej: "En formato Markdown con bloques de código", "Como un archivo .py", "JSON con claves 'codigo' y 'explicacion'".</span>
+                    </span>
+                </label>
+                <textarea id="formatoSalida" name="formatoSalida" placeholder="Ej: Código en un bloque, explicación en párrafos separados..."></textarea>
+                
+                <div class="checkbox-group">
+                    <div>
+                        <input type="checkbox" id="incluirEjemplosUso" name="incluirEjemplosUso" value="true">
+                        <label for="incluirEjemplosUso" class="checkbox-item-label">Incluir ejemplos de uso o pruebas básicas
+                            <span class="tooltip"><span class="emoji">ℹ️</span>
+                                <span class="tooltiptext">Marcar si deseas que la IA proporcione ejemplos de cómo usar el código generado o algunas pruebas simples.</span>
+                            </span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="checkbox-group checkbox-links-request"> 
+                    <div>
+                        <input type="checkbox" id="textualLinksRequest" name="textualLinksRequest" value="true"> 
+                        <label for="textualLinksRequest" class="checkbox-item-label"> Incluir links externos de forma textual y clara 
+                            <span class="tooltip"><span class="emoji">ℹ️</span> 
+                                <span class="tooltiptext">Pide que los links a documentación o recursos se muestren completos (ej: https://www.ejemplo.com) para copiarlos fácil.</span>
+                            </span>
+                        </label> 
+                    </div>
+                </div>
+                <div class="checkbox-group checkbox-quality-request"> 
+                    <div>
+                        <input type="checkbox" id="qualityRequest" name="qualityRequest" value="true">
+                        <label for="qualityRequest" class="checkbox-item-label"> Solicitud de Calidad y Precisión Adicional 
+                            <span class="tooltip"><span class="emoji">ℹ️</span>
+                                <span class="tooltiptext">Añade una directiva para que la IA revise la corrección, eficiencia, legibilidad, robustez y cumplimiento de requisitos antes de responder.</span>
+                            </span>
+                        </label> 
+                    </div>
+                </div>
+            </fieldset>
+
+            <div id="loadedConfigNameDisplay"></div>
+
+            <div id="actionButtons" style="text-align: center; margin-top: 30px;">
+                <button type="button" id="btnGeneratePrompt"><span class="emoji">🚀</span> Generar Prompt</button>
+                <button type="button" id="btnCopyPrompt" class="secondary"><span class="emoji">📋</span> Copiar Prompt</button>
+            </div>
+
+            <div id="outputPromptContainer">
+                <h2><span class="emoji">💡</span> Prompt JSON Generado</h2>
+                <textarea id="outputPrompt" readonly placeholder="Aquí aparecerá el prompt JSON generado..."></textarea>
+            </div>
+
+            <div class="personal-info-section">
+                <legend><span class="emoji">👨‍💻</span> Sobre el Creador & Ayuda</legend>
+                <p>
+                    <span class="emoji">🙏</span>Gracias por usar esta app. Si te es útil, considera apoyar al creador original del template.
+                </p>
+                <div class="social-icons">
+                    <a href="https://www.youtube.com/c/CamiloMonsalve" target="_blank" rel="noopener noreferrer" title="YouTube" class="fab fa-youtube"></a>
+                    <a href="https://www.linkedin.com/feed/" target="_blank" rel="noopener noreferrer" title="LinkedIn" class="fab fa-linkedin"></a>
+                    <a href="https://www.instagram.com/camimonsa3d/" target="_blank" rel="noopener noreferrer" title="Instagram" class="fab fa-instagram"></a>
+                </div>
+                 <p class="donation-text">
+                    Esta app es una adaptación. Si deseas apoyar al creador del template original, puedes encontrar su información en el archivo base.
+                </p>
+                <div id="donate-button-container">
+                    </div>
+            </div>
+        </form>
+    </div>
+
+    <a href="#" id="scrollToTopBtn" title="Ir arriba">↑</a>
+
+    <script>
+        // --- CONFIGURACIÓN INICIAL Y VALORES POR DEFECTO ---
+        const neutralConfig = {
+            rol: "un asistente experto en programación",
+            lenguajeProgramacion: "Python",
+            tareaTitulo: "",
+            descripcionProblema: "",
+            codigoExistente: "",
+            versionFrameworks: "",
+            entornoEjecucion: "",
+            dependencias: "",
+            estiloComentarios: "Equilibrado (Recomendado)",
+            convencionesNomenclatura: "",
+            nivelOptimizacion: "Legibilidad primero (Código claro y fácil de entender)",
+            manejoErrores: "Robusto (Try-catch extensivo, validaciones)",
+            negativePrompt: "",
+            audiencia: "",
+            formatoSalidaTipo: "Solo código",
+            formatoSalida: "",
+            incluirEjemplosUso: false,
+            textualLinksRequest: false,
+            qualityRequest: false,
+            chkIncludePromptInSave: false // Estado del checkbox de la barra superior
+        };
+
+        const FIXED_PROMPT_PARAMS_PROGRAMMING = {
+            promptHeader: "TASK: Actúa como un asistente experto en programación. Analiza cuidadosamente la siguiente solicitud y genera el código o la explicación solicitada, adhiriéndote a todos los detalles y restricciones proporcionados.",
+            directrices_generacion_base: {
+                "REGLA_1_ContextoGlobal": "Tu rol es {rol_IA_especifico}. Tu tarea principal es: {tarea_principal_IA}.",
+                "REGLA_2_EntenderRequisitos": "IMPERATIVO: Lee, comprende y sigue TODOS los detalles especificados en la sección 'detalles_solicitud_programacion'. Presta máxima atención al lenguaje, descripción del problema, contexto técnico, estilo de código y formato de salida.",
+                "REGLA_3_CodigoDeCalidad": "OBJETIVO: Escribe código que sea claro, eficiente y bien comentado según se especifique. Si se solicitan explicaciones, deben ser precisas, concisas y adecuadas para la audiencia indicada.",
+                "REGLA_4_EvitarRestricciones": "RESTRICCIONES: Cumple estrictamente con cualquier instrucción detallada en 'PROMPT_NEGATIVO'. No incluyas nada de lo que se pide evitar.",
+                "REGLA_5_FormatoSalida": "FORMATO: Entrega el resultado final estrictamente en el 'FORMATO_SALIDA_ESPERADO'. Si se piden ejemplos de uso, asegúrate de que sean funcionales, relevantes y fáciles de entender.",
+                "REGLA_6_ClaridadSiAmbiguedad": "CLARIFICACIÓN (Solo si es absolutamente necesario): Si alguna parte crítica de la solicitud es extremadamente ambigua y te impide generar una respuesta de alta calidad, puedes formular UNA pregunta concisa para aclarar ANTES de generar el código. Sin embargo, prioriza generar la respuesta si la información proporcionada es suficiente para inferir una solución razonable."
+            }
+        };
+        
+        // --- VARIABLES GLOBALES Y REFERENCIAS AL DOM ---
+        let history = []; 
+        let historyIndex = -1; 
+        const MAX_HISTORY_STATES = 20;
+        let lastLoadedConfigFilename = null;
+        let promptHasUnsavedChanges = false;
+
+        const promptForm = document.getElementById('promptForm');
+        const outputPromptTextarea = document.getElementById('outputPrompt');
+        const currentDateEl = document.getElementById('currentDate');
+        const btnGeneratePrompt = document.getElementById('btnGeneratePrompt');
+        const btnCopyPrompt = document.getElementById('btnCopyPrompt');
+        const btnClearForm = document.getElementById('btnClearForm');
+        const btnOpenConfig = document.getElementById('btnOpenConfig');
+        const fileOpenConfigInput = document.getElementById('fileOpenConfig');
+        const btnSaveConfig = document.getElementById('btnSaveConfig');
+        const btnUndo = document.getElementById('btnUndo');
+        const btnRedo = document.getElementById('btnRedo');
+        const chkIncludePromptInSave = document.getElementById('chkIncludePromptInSave');
+        const loadedConfigNameDisplay = document.getElementById('loadedConfigNameDisplay');
+        const scrollToTopBtn = document.getElementById('scrollToTopBtn');
+
+        // --- MANEJO DE ESTADO (CAMBIOS SIN GUARDAR, HISTORIAL) ---
+        function setUnsavedChanges(status) {
+            promptHasUnsavedChanges = status;
+        }
+
+        function getFormValues() {
+            const formData = new FormData(promptForm);
+            const values = {};
+            for (const element of promptForm.elements) {
+                if (!element.name) continue;
+                if (element.type === 'checkbox') {
+                    values[element.name] = element.checked;
+                } else {
+                    values[element.name] = element.value;
+                }
+            }
+            // Asegurar que los checkboxes que no están en el form pero sí en neutralConfig se incluyan
+            if (typeof values['incluirEjemplosUso'] === 'undefined') values['incluirEjemplosUso'] = false;
+            if (typeof values['textualLinksRequest'] === 'undefined') values['textualLinksRequest'] = false;
+            if (typeof values['qualityRequest'] === 'undefined') values['qualityRequest'] = false;
+            
+            values.chkIncludePromptInSave = chkIncludePromptInSave.checked; // Capturar estado del checkbox de la barra
+            return values;
+        }
+
+        function setFormValues(config, calledFromHistory = false) {
+            for (const key in config) {
+                const element = promptForm.elements[key];
+                if (element) {
+                    if (element.type === 'checkbox') {
+                        element.checked = config[key];
+                    } else {
+                        if (element.value !== undefined) element.value = config[key];
+                    }
+                }
+            }
+            if (config.hasOwnProperty('chkIncludePromptInSave')) { // Restaurar estado del checkbox de la barra
+                chkIncludePromptInSave.checked = config.chkIncludePromptInSave;
+            }
+
+            if (!calledFromHistory) {
+                setUnsavedChanges(false); 
+            }
+            updateUndoRedoButtons();
+        }
+        
+        function clearLoadedConfigName() {
+            loadedConfigNameDisplay.textContent = '';
+            loadedConfigNameDisplay.style.display = 'none';
+            lastLoadedConfigFilename = null;
+        }
+
+        function resetFormToNeutral() {
+            if (promptHasUnsavedChanges) {
+                // Usar un modal personalizado en el futuro en lugar de window.confirm
+                if (!confirm("Hay cambios sin guardar. ¿Estás seguro de que quieres limpiar el formulario y perder esos cambios?")) {
+                    return; 
+                }
+            }
+            setFormValues(neutralConfig, false); 
+            outputPromptTextarea.value = "Aquí aparecerá el prompt JSON generado...";
+            clearLoadedConfigName();
+            history = [];
+            historyIndex = -1;
+            const neutralStateValues = getFormValues();
+            history.push(neutralStateValues);
+            historyIndex = 0;
+            updateUndoRedoButtons();
+            setUnsavedChanges(false); 
+        }
+
+        // --- GENERACIÓN DEL PROMPT ---
+        function generatePrompt() {
+            const userValues = getFormValues();
+            const currentDateFormatted = new Date().toLocaleDateString('es-ES', { day: '2-digit', month: 'long', year: 'numeric' });
+            
+            // No limpiar el nombre del archivo cargado al generar, solo si se guarda uno nuevo con otro nombre.
+            // clearLoadedConfigName(); 
+
+            const rolIA = `un ${userValues.rol || 'asistente experto en programación'} especializado en ${userValues.lenguajeProgramacion}`;
+            const tareaPrincipalIA = userValues.tareaTitulo || `asistir con una tarea de programación en ${userValues.lenguajeProgramacion}`;
+
+            const detallesSolicitud = {
+                FECHA_ACTUALIZACION: currentDateFormatted,
+                LENGUAJE_PROGRAMACION: userValues.lenguajeProgramacion,
+                DESCRIPCION_PROBLEMA_REQUISITO: userValues.descripcionProblema || "No especificado.",
+                CODIGO_EXISTENTE: userValues.codigoExistente || "No proporcionado.",
+                CONTEXTO_TECNICO: {
+                    VERSION_LENGUAJE_FRAMEWORKS: userValues.versionFrameworks || "No especificado.",
+                    ENTORNO_EJECUCION: userValues.entornoEjecucion || "No especificado.",
+                    DEPENDENCIAS_ESPECIFICAS: userValues.dependencias || "No especificadas."
+                },
+                ESTILO_FORMATO_CODIGO: {
+                    ESTILO_COMENTARIOS: userValues.estiloComentarios,
+                    CONVENCIONES_NOMENCLATURA: userValues.convencionesNomenclatura || `Estándar para ${userValues.lenguajeProgramacion}.`,
+                    NIVEL_OPTIMIZACION: userValues.nivelOptimizacion,
+                    MANEJO_ERRORES: userValues.manejoErrores
+                },
+                PROMPT_NEGATIVO: userValues.negativePrompt || "Ninguna restricción negativa específica.",
+                AUDIENCIA_CODIGO_EXPLICACION: userValues.audiencia || "Desarrollador general.",
+                FORMATO_SALIDA_ESPERADO: {
+                    TIPO_PRINCIPAL: userValues.formatoSalidaTipo,
+                    DESCRIPCION_ADICIONAL: userValues.formatoSalida || "Según el tipo principal.",
+                    INCLUIR_EJEMPLOS_USO: userValues.incluirEjemplosUso ? "Sí" : "No"
+                }
+            };
+
+            if (userValues.textualLinksRequest) {
+                detallesSolicitud.FORMATO_SALIDA_ESPERADO.SOLICITUD_LINKS_TEXTUALES = "Incluir todos los links externos de forma textual y completa (ej. https://www.ejemplo.com).";
+            }
+
+            let directricesGeneracion = JSON.parse(JSON.stringify(FIXED_PROMPT_PARAMS_PROGRAMMING.directrices_generacion_base));
+            directricesGeneracion.REGLA_1_ContextoGlobal = directricesGeneracion.REGLA_1_ContextoGlobal
+                .replace('{rol_IA_especifico}', rolIA)
+                .replace('{tarea_principal_IA}', tareaPrincipalIA);
+            
+            const fullPrompt = {
+                prompt_directive: FIXED_PROMPT_PARAMS_PROGRAMMING.promptHeader,
+                rol_IA_especifico: rolIA,
+                tarea_principal_IA: tareaPrincipalIA,
+                detalles_solicitud_programacion: detallesSolicitud,
+                directrices_generacion: directricesGeneracion
+            };
+
+            if (userValues.qualityRequest) {
+                fullPrompt.recordatorio_calidad_adicional = "REVISION_FINAL_OBLIGATORIA: Antes de entregar tu respuesta, verifica exhaustivamente los siguientes puntos: 1. **Corrección:** El código no debe tener errores de lógica ni de sintaxis y debe cumplir funcionalmente con lo solicitado. 2. **Eficiencia:** Considerar el buen rendimiento y uso de recursos, especialmente si se indicó en 'Nivel de Optimización'. 3. **Legibilidad:** El código debe ser claro, bien formateado y fácil de entender, siguiendo las convenciones de nomenclatura y estilo de comentarios. 4. **Robustez:** Si se especificó, el manejo de errores debe ser adecuado y cubrir casos borde. 5. **Cumplimiento Total:** Asegúrate de que TODOS los requisitos y detalles proporcionados en 'detalles_solicitud_programacion' han sido abordados.";
+            }
+
+            outputPromptTextarea.value = JSON.stringify(fullPrompt, null, 2);
+            setUnsavedChanges(true); 
+        }
+
+        // --- COPIAR, GUARDAR, ABRIR CONFIGURACIÓN ---
+        function copyPromptToClipboard() {
+            if (!outputPromptTextarea.value || outputPromptTextarea.value === "Aquí aparecerá el prompt JSON generado...") {
+                // Usar un modal personalizado en el futuro
+                alert("Primero genera un prompt para copiar.");
+                return;
+            }
+            // navigator.clipboard.writeText es más moderno pero puede fallar en iframes o contextos no seguros
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(outputPromptTextarea.value).then(() => {
+                    alert("¡Prompt copiado al portapapeles!");
+                }).catch(err => {
+                    console.error('Error al copiar con navigator.clipboard: ', err);
+                    fallbackCopyTextToClipboard(outputPromptTextarea.value);
+                });
+            } else {
+                fallbackCopyTextToClipboard(outputPromptTextarea.value);
+            }
+        }
+
+        function fallbackCopyTextToClipboard(text) {
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            // Evitar que se vea el textarea y el scroll
+            textArea.style.position = "fixed"; 
+            textArea.style.top = "-9999px";
+            textArea.style.left = "-9999px";
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            try {
+                const successful = document.execCommand('copy');
+                if (successful) {
+                    alert("¡Prompt copiado al portapapeles! (fallback)");
+                } else {
+                    alert("No se pudo copiar el prompt. Por favor, cópialo manualmente.");
+                }
+            } catch (err) {
+                console.error('Error al copiar con document.execCommand: ', err);
+                alert("No se pudo copiar el prompt. Por favor, cópialo manualmente.");
+            }
+            document.body.removeChild(textArea);
+        }
+
+        function saveConfiguration() {
+            const currentConfig = getFormValues(); // Esto ya incluye chkIncludePromptInSave
+            let dataToSave = { 
+                appVersion: "program_prompt_generator_v1.0.0", // Para futuras migraciones
+                formConfiguration: currentConfig, 
+                savedAt: new Date().toISOString() 
+            };
+
+            if (currentConfig.chkIncludePromptInSave && outputPromptTextarea.value && outputPromptTextarea.value !== "Aquí aparecerá el prompt JSON generado...") {
+                try {
+                    dataToSave.generatedPrompt = JSON.parse(outputPromptTextarea.value);
+                } catch (e) {
+                    // Si no es JSON válido (aunque debería serlo), guardarlo como string
+                    dataToSave.generatedPrompt = outputPromptTextarea.value; 
+                }
+            }
+
+            let finalFilename;
+            if (lastLoadedConfigFilename) {
+                finalFilename = lastLoadedConfigFilename;
+            } else {
+                let langPart = (promptForm.elements.lenguajeProgramacion.value || "Lang").replace(/\s+/g, '_').replace(/[^\w-]/g, '');
+                let tareaPart = (promptForm.elements.tareaTitulo.value || "Tarea").substring(0, 30).replace(/\s+/g, '_').replace(/[^\w-]/g, '');
+                finalFilename = `prog_prompt_${langPart}_${tareaPart}.json`;
+                if (langPart === "Lang" && tareaPart === "Tarea") {
+                     finalFilename = `prog_prompt_config_${new Date().toISOString().slice(0,10).replace(/-/g,'')}.json`;
+                }
+            }
+            
+            if (!finalFilename.toLowerCase().endsWith('.json')) finalFilename += '.json';
+            finalFilename = finalFilename.replace(/[<>:"/\\|?*]+/g, '_'); // Sanitizar nombre de archivo
+
+            const blob = new Blob([JSON.stringify(dataToSave, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = finalFilename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            setUnsavedChanges(false); 
+
+            // Actualizar el nombre del archivo cargado si se guardó con un nombre diferente o por primera vez
+            if (!lastLoadedConfigFilename || lastLoadedConfigFilename !== finalFilename) {
+                 if (finalFilename !== `prog_prompt_config_${new Date().toISOString().slice(0,10).replace(/-/g,'')}.json` || !lastLoadedConfigFilename) {
+                    lastLoadedConfigFilename = finalFilename;
+                    loadedConfigNameDisplay.textContent = `Configuración guardada como: ${finalFilename}`;
+                    loadedConfigNameDisplay.style.display = 'block';
+                }
+            }
+        }
+
+        function openConfiguration(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const loadedData = JSON.parse(e.target.result);
+                        if (loadedData.formConfiguration) {
+                            // Fusionar con neutralConfig para asegurar que todos los campos existan
+                            const mergedConfig = { ...neutralConfig, ...loadedData.formConfiguration };
+                            setFormValues(mergedConfig, false);
+
+                            if (loadedData.generatedPrompt) {
+                                outputPromptTextarea.value = typeof loadedData.generatedPrompt === 'string' 
+                                    ? loadedData.generatedPrompt 
+                                    : JSON.stringify(loadedData.generatedPrompt, null, 2);
+                            } else {
+                                outputPromptTextarea.value = "Configuración cargada. Genera un nuevo prompt si es necesario.";
+                            }
+                            loadedConfigNameDisplay.textContent = `Configuración cargada: ${file.name}`;
+                            loadedConfigNameDisplay.style.display = 'block';
+                            lastLoadedConfigFilename = file.name;
+                            
+                            history = [];
+                            const loadedState = getFormValues();
+                            history.push(loadedState);
+                            historyIndex = 0;
+                            updateUndoRedoButtons();
+                            setUnsavedChanges(false); 
+                        } else {
+                            alert("El archivo de configuración no tiene el formato esperado (falta 'formConfiguration').");
+                            clearLoadedConfigName();
+                        }
+                    } catch (error) {
+                        console.error("Error al parsear JSON:", error, "Contenido:", e.target.result);
+                        alert("Error al leer o parsear el archivo de configuración: " + error.message + ". Revisa la consola (F12) para más detalles.");
+                        clearLoadedConfigName();
+                    }
+                };
+                reader.readAsText(file);
+            }
+            fileOpenConfigInput.value = ""; // Resetear input para permitir cargar el mismo archivo de nuevo
+        }
+
+        // --- HISTORIAL (UNDO/REDO) ---
+        function saveStateToHistory(stateToSave = null) {
+            const currentState = stateToSave || getFormValues();
+            // Evitar guardar estados idénticos consecutivos
+            if (history.length > 0 && historyIndex >=0 && historyIndex < history.length && 
+                JSON.stringify(currentState) === JSON.stringify(history[historyIndex])) {
+                return; 
+            }
+
+            // Si el estado actual es idéntico al estado neutral y es el primer cambio real,
+            // no marcar como "cambio sin guardar" a menos que haya más de un estado en el historial.
+            let isNeutralEquivalent = JSON.stringify(currentState) === JSON.stringify(neutralConfig);
+
+            history = history.slice(0, historyIndex + 1); 
+            history.push(currentState);
+            if (history.length > MAX_HISTORY_STATES) {
+                history.shift(); // Mantener el historial con un tamaño máximo
+            }
+            historyIndex = history.length - 1;
+            updateUndoRedoButtons();
+
+            if (!isNeutralEquivalent) {
+                setUnsavedChanges(true);
+            } else {
+                // Si es neutral, solo hay cambios si hay más de un estado (es decir, no es el estado inicial)
+                if (history.length > 1) {
+                    setUnsavedChanges(true);
+                } else {
+                    setUnsavedChanges(false);
+                }
+            }
+        }
+
+        function undo() {
+            if (historyIndex > 0) {
+                historyIndex--;
+                setFormValues(history[historyIndex], true); // true para indicar que es desde historial
+                // No limpiar el prompt generado al hacer undo/redo, el usuario puede querer regenerarlo
+                outputPromptTextarea.placeholder = "Estado anterior restaurado. Genera el prompt si es necesario para reflejar estos valores.";
+                setUnsavedChanges(true); // Cualquier acción de undo/redo implica un estado que podría ser diferente al guardado
+                updateUndoRedoButtons();
+            }
+        }
+
+        function redo() {
+            if (historyIndex < history.length - 1) {
+                historyIndex++;
+                setFormValues(history[historyIndex], true);
+                outputPromptTextarea.placeholder = "Estado posterior restaurado. Genera el prompt si es necesario para reflejar estos valores.";
+                setUnsavedChanges(true);
+                updateUndoRedoButtons();
+            }
+        }
+
+        function updateUndoRedoButtons() {
+            btnUndo.disabled = historyIndex <= 0;
+            btnRedo.disabled = historyIndex >= history.length - 1;
+        }
+        
+        // --- SCROLL TO TOP ---
+        window.onscroll = function() {scrollFunction()};
+        function scrollFunction() {
+            if (document.body.scrollTop > 100 || document.documentElement.scrollTop > 100) {
+                scrollToTopBtn.style.display = "flex"; // Usar flex para centrar el ícono
+                setTimeout(() => scrollToTopBtn.style.opacity = "1", 10);
+            } else {
+                scrollToTopBtn.style.opacity = "0";
+                setTimeout(() => scrollToTopBtn.style.display = "none", 300); // Ocultar después de la transición
+            }
+        }
+        scrollToTopBtn.addEventListener('click', (e) => {
+            e.preventDefault(); // Evitar que el # se añada a la URL
+            window.scrollTo({top: 0, behavior: 'smooth'});
+        });
+
+        // --- INICIALIZACIÓN Y EVENT LISTENERS ---
+        document.addEventListener('DOMContentLoaded', () => {
+            currentDateEl.textContent = `Fecha actual: ${new Date().toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}`;
+            resetFormToNeutral(); // Establece el estado inicial y el primer punto del historial
+
+            // Inicializar botón de donación si se desea (código original del template)
+            // if (typeof PayPal !== 'undefined') {
+            //     PayPal.Donation.Button({ 
+            //         env:'production', 
+            //         hosted_button_id:'HSKS65HNDHDCW', // Reemplazar con ID real si se usa
+            //         image: { src:'https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif', alt:'Donate with PayPal button', title:'PayPal - The safer, easier way to pay online!',} 
+            //     }).render('#donate-button');
+            // }
+        });
+
+        // Guardar estado en el historial en cada cambio de input relevante
+        promptForm.addEventListener('input', (event) => {
+            // Evitar que el historial se llene con cambios en el output o el checkbox de guardar
+            if (event.target.id !== 'outputPrompt' && event.target.id !== 'chkIncludePromptInSave') {
+                saveStateToHistory(getFormValues());
+            }
+        });
+        // chkIncludePromptInSave también debe registrarse en el historial si cambia
+        chkIncludePromptInSave.addEventListener('change', () => {
+            saveStateToHistory(getFormValues());
+        });
+
+        btnGeneratePrompt.addEventListener('click', () => { 
+            generatePrompt(); 
+            // Guardar el estado después de generar el prompt, ya que el prompt en sí es parte del "estado" si se incluye al guardar
+            saveStateToHistory(getFormValues());
+        });
+        btnCopyPrompt.addEventListener('click', copyPromptToClipboard);
+        btnClearForm.addEventListener('click', resetFormToNeutral); 
+        btnSaveConfig.addEventListener('click', saveConfiguration); 
+        btnOpenConfig.addEventListener('click', () => fileOpenConfigInput.click());
+        fileOpenConfigInput.addEventListener('change', openConfiguration); 
+        btnUndo.addEventListener('click', undo);
+        btnRedo.addEventListener('click', redo);
+
+        // Atajos de teclado para Undo/Redo
+        document.addEventListener('keydown', (event) => {
+            const activeElement = document.activeElement;
+            // Permitir Ctrl+Z/Shift+Z nativo en inputs/textareas
+            if (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA') {
+                if (event.ctrlKey && (event.key === 'z' || event.key === 'Z')) { 
+                    // No hacer nada aquí, dejar que el navegador maneje el undo/redo del input
+                    return; 
+                }
+            }
+            // Implementar undo/redo global si no se está en un input/textarea, o si no es Ctrl+Z
+            if (event.ctrlKey && !event.shiftKey && (event.key === 'z' || event.key === 'Z')) {
+                event.preventDefault(); 
+                undo();
+            }
+            if (event.ctrlKey && event.shiftKey && (event.key === 'Z' || event.key === 'z')) {
+                event.preventDefault();
+                redo();
+            }
+        });
+
+        // Advertencia antes de salir si hay cambios sin guardar
+        window.addEventListener('beforeunload', (event) => {
+            if (promptHasUnsavedChanges) {
+                event.preventDefault(); 
+                event.returnValue = ''; // Requerido por algunos navegadores
+                return ''; // Requerido por otros
+            }
+        });
+
+    </script>
+</body>
+</html>
